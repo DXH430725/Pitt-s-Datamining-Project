@@ -1,13 +1,15 @@
 import pandas as pd
-from sklearn.svm import SVC
+from sklearn.neighbors import KNeighborsClassifier
 
-
-def SupportVector(train_x, train_y):
+def KNNClassifier(train_x, train_y):
 
     x = train_x
     y = train_y
 
+    # Create K-Nearest Neighbors classifier
+    knn_model = KNeighborsClassifier()
+    
+    # Train the KNN model
+    knn_model.fit(x, y)
 
-    predict_model = SVC(random_state=1)
-    predict_model.fit(x, y)
-    return predict_model
+    return knn_model

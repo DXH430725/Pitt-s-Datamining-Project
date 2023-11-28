@@ -1,26 +1,25 @@
 import pandas as pd
 import matplotlib.pyplot as plt
-from sklearn.tree import DecisionTreeClassifier  # Updated import for classifier
+from sklearn.neighbors import KNeighborsClassifier  # Updated import for classifier
 from sklearn.model_selection import RandomizedSearchCV
+from sklearn.metrics import accuracy_score, recall_score, precision_score, f1_score, roc_auc_score
 from scipy.stats import randint
-from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, roc_auc_score
 
-def optimize_decision_tree(train_x, train_y,test_x, test_y, fig):
-    # Define Decision Tree hyperparameter search space
+def optimize_knn(train_x, train_y,test_x, test_y, fig):
+    # Define KNN hyperparameter search space
     param_dist = {
-        'max_depth': [None, 10, 20, 30, 40, 50],
-        'min_samples_split': randint(2, 20),
-        'min_samples_leaf': randint(1, 20),
-        'max_features': ['log2', 'sqrt', None],
+        'n_neighbors': randint(1, 20),
+        'weights': ['uniform', 'distance'],
+        'p': [1, 2]  # 1 for Manhattan distance (L1), 2 for Euclidean distance (L2)
     }
 
-    # Create Decision Tree model
-    decision_tree = DecisionTreeClassifier(random_state=1)  # Use DecisionTreeClassifier
+    # Create KNN model
+    knn_model = KNeighborsClassifier()  # Use KNeighborsClassifier
 
     # Use RandomizedSearchCV for random search
     random_search = RandomizedSearchCV(
-        decision_tree, 
-        param_distributions=param_dist, 
+        knn_model,
+        param_distributions=param_dist,
         n_iter=10,  # Set the number of search iterations
         scoring='accuracy',  # Use accuracy for classification problems
         cv=5,  # Number of cross-validation folds
@@ -35,13 +34,13 @@ def optimize_decision_tree(train_x, train_y,test_x, test_y, fig):
 
     # Output the best parameters
     best_params = random_search.best_params_
-    print("Evaluate Decision Tree Regressor Model:")
+    print("Evaluate K-Nearest Neighbors (KNN) Model:")
     print("Best Parameters:", best_params)
 
     # Output the performance of the best model
     best_model = random_search.best_estimator_
-    print("Best Model Performance (accuracy):", random_search.best_score_)
-    
+    print("Best Model Performance(accuracy):", random_search.best_score_)
+
     # Make predictions
     predictions = best_model.predict(test_x)
 
@@ -67,28 +66,14 @@ def optimize_decision_tree(train_x, train_y,test_x, test_y, fig):
     print(f"AUC: {auc:.4f}")
     print("")
 
+
+
     if fig:
-        # Visualize the relationship between 'max_depth' and performance
+        # Visualize the relationship between 'n_neighbors' and performance
         plt.figure(figsize=(10, 6))
-        plt.scatter(results_df['param_max_depth'], results_df['mean_test_score'])
-        plt.title('Decision Tree Hyperparameter Tuning')
-        plt.xlabel('Max Depth')
-        plt.ylabel('Accuracy')
-        plt.show()
-
-        # Visualize the relationship between 'min_samples_split' and performance
-        plt.figure(figsize=(10, 6))
-        plt.scatter(results_df['param_min_samples_split'], results_df['mean_test_score'])
-        plt.title('Decision Tree Hyperparameter Tuning')
-        plt.xlabel('Min Samples Split')
-        plt.ylabel('Accuracy')
-        plt.show()
-
-        # Visualize the relationship between 'min_samples_leaf' and performance
-        plt.figure(figsize=(10, 6))
-        plt.scatter(results_df['param_min_samples_leaf'], results_df['mean_test_score'])
-        plt.title('Decision Tree Hyperparameter Tuning')
-        plt.xlabel('Min Samples Leaf')
+        plt.scatter(results_df['param_n_neighbors'], results_df['mean_test_score'])
+        plt.title('KNN Hyperparameter Tuning')
+        plt.xlabel('Number of Neighbors')
         plt.ylabel('Accuracy')
         plt.show()
 

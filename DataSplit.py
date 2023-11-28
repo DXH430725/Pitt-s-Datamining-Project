@@ -14,7 +14,7 @@ def split(dataset, features=None, test_size=50):
     test_x = x.iloc[:test_size]
     test_y = y.iloc[:test_size]
 
-    return train_x, test_x, train_y, test_y
+    return train_x, test_x, train_y, test_y, x, y
 
 if __name__ == "__main__":
     train_x, test_x, train_y, test_y = split()
